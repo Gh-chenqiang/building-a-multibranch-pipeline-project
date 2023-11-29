@@ -11,14 +11,31 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Test') {
             steps {
                 sh 'npm install'
             }
         }
-        stage('Test') {
+
+        stage('Deliver for development') {
+            when {
+                branch 'development'
+            }
             steps {
-                sh 'sh ./jenkins/scripts/test.sh'
+                sh 'sh ./jenkins/scripts/deliver-for-development.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh 'sh ./jenkins/scripts/kill.sh'
+            }
+        }
+
+        stage('Deploy for production') {
+            when {
+                branch 'production'
+            }
+            steps {
+                sh 'sh ./jenkins/scripts/dploy for production.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh 'sh ./jenkins/scripts/kill.sh'
             }
         }
     }
